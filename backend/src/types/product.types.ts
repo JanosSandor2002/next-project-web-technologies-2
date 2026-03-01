@@ -13,4 +13,8 @@ export interface IProduct {
   camera?: string;
   battery?: string;
   charge?: string;
+
+  price: number;
+  stock: number;
+  url: string;
 }

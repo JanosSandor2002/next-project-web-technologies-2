@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --loader ts-node/esm --no-warnings src/config/seed.ts && node --loader ts-node/esm --no-warnings src/server.ts"
+    "dev": "node --loader ts-node/esm --no-warnings src/server.ts",
+    "seed": "node --loader ts-node/esm --no-warnings src/config/seed.ts"
   },
   "keywords": [],
   "author": "",

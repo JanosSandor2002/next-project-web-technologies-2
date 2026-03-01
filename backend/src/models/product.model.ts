@@ -9,7 +9,6 @@ const productSchema = new mongoose.Schema<IProduct>(
     variant: String,
     year: Number,
 
-    // Specifikációk
     rom: String,
     ram: String,
     cpu: String,
@@ -17,6 +16,10 @@ const productSchema = new mongoose.Schema<IProduct>(
     camera: String,
     battery: String,
     charge: String,
+
+    price: { type: Number, required: true },
+    stock: { type: Number, required: true },
+    url: { type: String, required: true },
   },
   { timestamps: true },
 );
