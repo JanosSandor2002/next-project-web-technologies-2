@@ -1,14 +1,10 @@
 import mongoose from 'mongoose';
-import type { IProduct } from '../types/product.types.js';
-
-const productSchema = new mongoose.Schema<IProduct>(
-  {
+const productSchema = new mongoose.Schema({
     brand: { type: String, required: true },
     series: { type: String, required: true },
     model: { type: String, required: true },
     variant: String,
     year: Number,
-
     // Specifikációk
     rom: String,
     ram: String,
@@ -17,8 +13,6 @@ const productSchema = new mongoose.Schema<IProduct>(
     camera: String,
     battery: String,
     charge: String,
-  },
-  { timestamps: true },
-);
-
-export default mongoose.model<IProduct>('Product', productSchema);
+}, { timestamps: true });
+export default mongoose.model('Product', productSchema);
+//# sourceMappingURL=product.model.js.map
