@@ -1,37 +1,52 @@
 'use client';
 
 import Link from 'next/link';
-import { FaGithub } from 'react-icons/fa';
-import { useState } from 'react';
-import { useAuth } from '@/app/context/AuthContext';
+import { useState, useEffect } from 'react';
+import { FaUserCircle, FaSignOutAlt, FaHome } from 'react-icons/fa';
+import { useGlobal } from '@/app/context/GlobalContext';
 
 export default function Navbar() {
-  const { user, login, logout } = useAuth();
+  const { state, login, logout } = useGlobal();
+  const user = state.user;
+
+  // Lokális jelszó input
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  async function handleLogin() {
-    const ok = await login(password);
-    if (!ok) {
-      setError('Hibás jelszó');
-      return;
+  useEffect(() => {
+    if (!error) return;
+
+    const timer = setTimeout(() => {
+      setError('');
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [error]);
+
+  const handleLogin = async () => {
+    const success = await login(password);
+    if (!success) {
+      setError('Hibás jelszó!');
+      setPassword('');
+    } else {
+      setError('');
+      setPassword('');
     }
-    setPassword('');
-    setError('');
-  }
+  };
 
   return (
-    <nav className='bg-gray-900 text-white p-4 flex items-center justify-between'>
-      {/* Oldal linkek */}
-      <div className='flex gap-6'>
-        <Link href='/' className='hover:text-cyan-400 transition'>
-          Bemutató
+    <nav className='bg-black text-gray-200 p-4 flex justify-between items-center shadow-lg'>
+      {/* Bal oldal – logo + fő navigáció */}
+      <div className='flex items-center space-x-6'>
+        <Link
+          href='/'
+          className='flex items-center text-cyan-400 font-bold text-lg'
+        >
+          <FaHome className='mr-2' /> Nyilvántartó
         </Link>
+
         <Link href='/nyilvantartas' className='hover:text-cyan-400 transition'>
           Nyilvántartás
-        </Link>
-        <Link href='/kapcsolat' className='hover:text-cyan-400 transition'>
-          Kapcsolat
         </Link>
         <Link href='/statisztikak' className='hover:text-cyan-400 transition'>
           Statisztikák
@@ -39,50 +54,48 @@ export default function Navbar() {
         <Link href='/sugo' className='hover:text-cyan-400 transition'>
           Súgó
         </Link>
+        <Link href='/kapcsolat' className='hover:text-cyan-400 transition'>
+          Kapcsolat
+        </Link>
         <Link href='/admin' className='hover:text-cyan-400 transition'>
           Admin
         </Link>
       </div>
 
-      {/* Auth / GitHub */}
-      <div className='flex items-center gap-4'>
-        {!user ? (
-          <>
+      {/* Jobb oldal – felhasználói rész */}
+      <div className='flex items-center space-x-4'>
+        {user ? (
+          <div className='flex items-center space-x-3'>
+            <div className='flex items-center space-x-1 text-emerald-400 font-semibold'>
+              <FaUserCircle size={20} />
+              <span>{user.name}</span>
+            </div>
+
+            <button
+              onClick={logout}
+              className='flex items-center bg-emerald-400 text-black px-3 py-1 rounded hover:bg-emerald-500 transition'
+            >
+              <FaSignOutAlt className='mr-1' /> Kijelentkezés
+            </button>
+          </div>
+        ) : (
+          <div className='flex items-center space-x-2'>
             <input
               type='password'
               placeholder='Jelszó'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className='bg-black border border-gray-700 p-2 rounded text-sm text-gray-200'
+              className='bg-black border border-gray-700 text-gray-200 rounded px-2 py-1 focus:outline-none focus:border-cyan-400 transition'
             />
             <button
               onClick={handleLogin}
-              className='bg-cyan-500 text-black px-4 py-2 rounded hover:bg-cyan-600 transition'
+              className='bg-cyan-400 text-black px-3 py-1 rounded hover:bg-cyan-500 transition'
             >
               Bejelentkezés
             </button>
-            {error && <span className='text-red-400 text-sm'>{error}</span>}
-          </>
-        ) : (
-          <>
-            <span className='text-cyan-400 font-semibold'>👤 {user.name}</span>
-            <button
-              onClick={logout}
-              className='border border-cyan-400 px-4 py-2 rounded hover:bg-cyan-400 hover:text-black transition'
-            >
-              Logout
-            </button>
-          </>
+            {error && <span className='text-red-500 text-sm'>{error}</span>}
+          </div>
         )}
-
-        {/* GitHub ikon */}
-        <Link
-          href='https://janossandor2002.github.io/my-website'
-          target='_blank'
-          className='ml-6 text-white hover:text-cyan-400 transition'
-        >
-          <FaGithub size={24} />
-        </Link>
       </div>
     </nav>
   );

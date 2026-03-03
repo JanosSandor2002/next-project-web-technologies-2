@@ -6,5 +6,5 @@ const router = Router();
 router.post('/', controller.create);
 router.get('/', controller.getAll);
 router.get('/brand/:brand', controller.getByBrand); // <<< ide kell
-
+router.put('/:id', controller.update);
 export default router;

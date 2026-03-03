@@ -1,5 +1,5 @@
 // ProductCard.tsx
-import { Product } from '@/types/Product';
+import { Product } from '@/app/context/Reducer';
 
 type Props = {
   product: Product;
@@ -10,9 +10,6 @@ export default function ProductCard({ product }: Props) {
     <div className='p-6 border-2 border-cyan-400 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-1 hover:scale-105 bg-gray-900 flex flex-col items-center text-center'>
       <h2 className='text-xl font-bold mb-2 text-cyan-400'>{product.name}</h2>
 
-      <p className='text-gray-300'>
-        Kategória: {product.category || 'Elektronika'}
-      </p>
       <p className='text-gray-300'>Ár: {product.price ?? 'N/A'} USD</p>
       <p className='text-gray-300'>Készlet: {product.stock ?? 'N/A'}</p>
 

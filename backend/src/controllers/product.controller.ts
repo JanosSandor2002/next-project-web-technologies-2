@@ -11,6 +11,28 @@ export const getAll = async (_: Request, res: Response) => {
   res.json(products);
 };
 
+export const update = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || Array.isArray(id)) {
+      return res
+        .status(400)
+        .json({ message: 'ID parameter is required and must be a string' });
+    }
+
+    const updatedProduct = await productService.updateProduct(id, req.body);
+
+    if (!updatedProduct) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    res.json(updatedProduct);
+  } catch (error) {
+    res.status(500).json({ message: 'Update failed' });
+  }
+};
+
 export const getByBrand = async (req: Request, res: Response) => {
   const brand = req.params.brand;
 
