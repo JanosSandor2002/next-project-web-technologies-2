@@ -1,0 +1,24 @@
+{
+  "name": "fullstack-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "cd backend && npm run build && cd ../frontend && npm run build",
+    "start": "concurrently \"cd backend && npm start\" \"cd frontend && npm start\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JanosSandor2002/next-project-web-technologies-2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JanosSandor2002/next-project-web-technologies-2/issues"
+  },
+  "homepage": "https://github.com/JanosSandor2002/next-project-web-technologies-2#readme",
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
