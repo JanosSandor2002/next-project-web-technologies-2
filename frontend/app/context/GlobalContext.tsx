@@ -9,7 +9,14 @@ import {
 } from 'react';
 import axios from 'axios';
 import { reducer, initialState, Product } from './Reducer';
-import { SET_USER, LOGOUT, SET_PRODUCTS, UPDATE_PRODUCT } from './Actions';
+import {
+  SET_USER,
+  LOGOUT,
+  SET_PRODUCTS,
+  UPDATE_PRODUCT,
+  SET_MESSAGE_SENT,
+  RESET_CONTACT_FORM,
+} from './Actions';
 
 type GlobalContextType = {
   state: typeof initialState;
@@ -18,6 +25,11 @@ type GlobalContextType = {
   logout: () => void;
   fetchProducts: () => Promise<void>;
   updateProductWithName: (product: Product) => void;
+  sendMessage: (data: {
+    name: string;
+    email: string;
+    message: string;
+  }) => Promise<boolean>;
 };
 
 const GlobalContext = createContext<GlobalContextType | null>(null);
@@ -25,7 +37,7 @@ const GlobalContext = createContext<GlobalContextType | null>(null);
 export function GlobalProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // ----- Bejelentkezés -----
+  // Bejelentkezés
   const login = async (password: string) => {
     if (password === 'admin123') {
       dispatch({ type: SET_USER, payload: { name: 'Admin' } });
@@ -37,7 +49,7 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     dispatch({ type: LOGOUT });
   };
-  // GlobalContext.tsx updateProduct módosítva
+  // Update Termék
   const updateProductWithName = (product: Product) => {
     const productWithName = {
       ...product,
@@ -54,13 +66,13 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
     };
     dispatch({ type: UPDATE_PRODUCT, payload: productWithName });
   };
-  // ----- Termékek betöltése -----
+  // Termékek betöltése
   const fetchProducts = async () => {
     try {
       const res = await axios.get<Product[]>(
         'http://localhost:5000/api/products',
       );
-      // backend _id -> frontend id
+
       const mappedProducts: Product[] = res.data.map((p) => ({
         _id: p._id,
         brand: p.brand,
@@ -90,6 +102,24 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const sendMessage = async (data: {
+    name: string;
+    email: string;
+    message: string;
+  }) => {
+    try {
+      await axios.post('http://localhost:5000/api/messages', data);
+
+      dispatch({ type: SET_MESSAGE_SENT, payload: true });
+      dispatch({ type: RESET_CONTACT_FORM });
+
+      return true;
+    } catch (err) {
+      console.error('Hiba az üzenet küldésekor:', err);
+      return false;
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -103,6 +133,7 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
         logout,
         fetchProducts,
         updateProductWithName,
+        sendMessage,
       }}
     >
       {children}

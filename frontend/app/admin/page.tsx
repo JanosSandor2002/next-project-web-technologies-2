@@ -1,19 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useGlobal } from '@/app/context/GlobalContext';
 import { Product } from '@/app/context/Reducer';
+import axios from 'axios';
+
+import {
+  SET_ADMIN_SELECTED,
+  SET_ADMIN_FORM,
+  SET_ADMIN_MESSAGE,
+} from '@/app/context/Actions';
 
 export default function AdminPage() {
-  const { state, updateProductWithName, fetchProducts } = useGlobal();
-  const { user, products } = state;
+  const { state, dispatch, updateProductWithName, fetchProducts } = useGlobal();
 
-  const [selectedId, setSelectedId] = useState('');
-  const [price, setPrice] = useState('');
-  const [stock, setStock] = useState('');
-  const [message, setMessage] = useState('');
+  const { user, products, admin } = state;
+  const { selectedId, price, stock, message } = admin;
 
-  // Frissítjük a terméklistát, ha még nincs betöltve
   useEffect(() => {
     if (products.length === 0) {
       fetchProducts();
@@ -29,39 +32,50 @@ export default function AdminPage() {
   }
 
   function handleSelect(id: string) {
-    setSelectedId(id);
+    dispatch({ type: SET_ADMIN_SELECTED, payload: id });
+
     const selectedProduct = products.find((p) => p._id === id);
+
     if (selectedProduct) {
-      setPrice(String(selectedProduct.price ?? ''));
-      setStock(String(selectedProduct.stock ?? ''));
+      dispatch({
+        type: SET_ADMIN_FORM,
+        payload: {
+          price: String(selectedProduct.price ?? ''),
+          stock: String(selectedProduct.stock ?? ''),
+        },
+      });
     }
   }
 
   async function handleSubmit(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
+
     if (!selectedId) return;
 
     try {
-      const res = await fetch(
+      const res = await axios.put(
         `http://localhost:5000/api/products/${selectedId}`,
         {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            price: Number(price),
-            stock: Number(stock),
-          }),
+          price: Number(price),
+          stock: Number(stock),
         },
       );
 
-      if (!res.ok) throw new Error('Hiba a mentés során');
+      const updatedProduct: Product = res.data;
 
-      const updatedProduct: Product = await res.json();
       updateProductWithName(updatedProduct);
-      setMessage('Sikeres frissítés!');
+
+      dispatch({
+        type: SET_ADMIN_MESSAGE,
+        payload: 'Sikeres frissítés!',
+      });
     } catch (err) {
       console.error(err);
-      setMessage('Hiba történt!');
+
+      dispatch({
+        type: SET_ADMIN_MESSAGE,
+        payload: 'Hiba történt!',
+      });
     }
   }
 
@@ -80,18 +94,10 @@ export default function AdminPage() {
           <option value='' disabled>
             Válassz telefont
           </option>
+
           {products.map((phone) => (
             <option key={phone._id} value={phone._id}>
-              {[
-                phone.brand,
-                phone.series,
-                phone.model != null && phone.model !== 'N/A'
-                  ? phone.model
-                  : null,
-                phone.variant ?? null,
-              ]
-                .filter(Boolean)
-                .join(' ')}
+              {phone.name}
             </option>
           ))}
         </select>
@@ -100,7 +106,12 @@ export default function AdminPage() {
           type='number'
           placeholder='Új ár'
           value={price}
-          onChange={(e) => setPrice(e.target.value)}
+          onChange={(e) =>
+            dispatch({
+              type: SET_ADMIN_FORM,
+              payload: { price: e.target.value, stock },
+            })
+          }
           className='w-full bg-black border p-3 rounded text-gray-200'
         />
 
@@ -108,7 +119,12 @@ export default function AdminPage() {
           type='number'
           placeholder='Készletszám'
           value={stock}
-          onChange={(e) => setStock(e.target.value)}
+          onChange={(e) =>
+            dispatch({
+              type: SET_ADMIN_FORM,
+              payload: { price, stock: e.target.value },
+            })
+          }
           className='w-full bg-black border p-3 rounded text-gray-200'
         />
 

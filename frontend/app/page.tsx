@@ -193,7 +193,7 @@ export default function HomePage() {
   );
 }
 
-/* ---------- Kisebb komponensek ---------- */
+// Kisebb komponensek
 function FeatureCard({
   title,
   text,

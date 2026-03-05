@@ -1,29 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useGlobal } from '@/app/context/GlobalContext';
+import { SET_CONTACT_FORM, SET_MESSAGE_SENT } from '@/app/context/Actions';
 
 export default function KapcsolatPage() {
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    message: '',
-  });
+  const { state, dispatch, sendMessage } = useGlobal();
 
-  const [sent, setSent] = useState(false);
+  const { contactForm, messageSent } = state;
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    dispatch({
+      type: SET_CONTACT_FORM,
+      payload: {
+        ...contactForm,
+        [e.target.name]: e.target.value,
+      },
+    });
+
+    if (messageSent) {
+      dispatch({ type: SET_MESSAGE_SENT, payload: false });
+    }
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
-    console.log(form); // később API
-
-    setSent(true);
-    setForm({ name: '', email: '', message: '' });
+    await sendMessage(contactForm);
   }
 
   return (
@@ -75,7 +78,7 @@ export default function KapcsolatPage() {
             Üzenet küldése
           </h2>
 
-          {sent && (
+          {messageSent && (
             <div className='border border-emerald-400 text-emerald-400 p-3 rounded-lg'>
               ✅ Üzenet elküldve!
             </div>
@@ -85,7 +88,7 @@ export default function KapcsolatPage() {
             type='text'
             name='name'
             placeholder='Neved'
-            value={form.name}
+            value={contactForm.name}
             onChange={handleChange}
             required
             className='w-full bg-black border border-gray-700 rounded-lg p-3 text-gray-200 focus:border-cyan-400 focus:outline-none transition'
@@ -95,7 +98,7 @@ export default function KapcsolatPage() {
             type='email'
             name='email'
             placeholder='Email címed'
-            value={form.email}
+            value={contactForm.email}
             onChange={handleChange}
             required
             className='w-full bg-black border border-gray-700 rounded-lg p-3 text-gray-200 focus:border-cyan-400 focus:outline-none transition'
@@ -105,7 +108,7 @@ export default function KapcsolatPage() {
             name='message'
             placeholder='Üzeneted...'
             rows={5}
-            value={form.message}
+            value={contactForm.message}
             onChange={handleChange}
             required
             className='w-full bg-black border border-gray-700 rounded-lg p-3 text-gray-200 focus:border-cyan-400 focus:outline-none transition'

@@ -14,10 +14,9 @@ export const updateProduct = async (id: string, data: Partial<IProduct>) => {
     runValidators: true,
   });
 };
-// <<< Új függvény a brand szerinti kereséshez
+//brand szerinti keresés
 export const getProductsByBrand = async (brand: string) => {
   return await Product.find({
     brand: { $regex: new RegExp(`^${brand}$`, 'i') },
   });
-  // 'i' flag = kis/nagybetűtől független
 };

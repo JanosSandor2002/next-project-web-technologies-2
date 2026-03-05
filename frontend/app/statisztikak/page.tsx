@@ -19,12 +19,6 @@ export default function StatisztikakPage() {
   // Kategóriák száma (unique series)
   const categories = Array.from(new Set(products.map((p) => p.series))).length;
 
-  // Összesített készlet érték
-  const totalValue = products.reduce(
-    (sum, p) => sum + (p.stock ?? 0) * (p.price ?? 0),
-    0,
-  );
-
   return (
     <div className='space-y-20 px-4 md:px-20 py-10'>
       {/* HERO */}
@@ -38,7 +32,7 @@ export default function StatisztikakPage() {
       </section>
 
       {/* STATS GRID */}
-      <section className='grid md:grid-cols-2 lg:grid-cols-6 gap-8'>
+      <section className='grid md:grid-cols-2 lg:grid-cols-4 gap-8'>
         <StatCard
           title='Összes telefon'
           value={totalProducts.toString()}
