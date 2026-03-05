@@ -2,3 +2,5 @@ node_modules
 
 list_ts_files.bat
 ts_files.txt
+
+dist
