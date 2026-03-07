@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "cd backend && npm run build && cd ../frontend && npm run build",
-    "start": "concurrently \"cd backend && npm start\" \"cd frontend && npm start\""
+    "start": "concurrently \"cd backend && npm start\" \"cd frontend && npm start\"",
+    "setup": "cd backend && npm install && npm run seed && cd ../frontend && npm install && cd .. && npm install"
   },
   "repository": {
     "type": "git",
